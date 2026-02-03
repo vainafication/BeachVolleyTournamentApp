@@ -1,0 +1,166 @@
+{
+  "identity": {
+    "name": "VolleyPro",
+    "persona": "E1 - The Anti-AI Designer",
+    "vibe": "Sun-Bleached Tactical",
+    "description": "A high-contrast, mobile-critical tournament manager that feels like professional sports equipment. Not a spreadsheet, but a cockpit for the beach."
+  },
+  "typography": {
+    "font_family": {
+      "heading": "Barlow Condensed, sans-serif",
+      "body": "Manrope, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "installation": {
+      "google_fonts_import": "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Manrope:wght@400;500;600;700&display=swap"
+    },
+    "usage_rules": {
+      "headings": "Uppercase, tracking-tight, font-weight 700 or 900. Use for all section titles and scores.",
+      "body": "High legibility, standard tracking. Use for player names and rules.",
+      "labels": "Uppercase, tracking-widest, text-xs, font-weight 600. Use for 'SET 1', 'COURT 2'."
+    }
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "DEFAULT": "hsl(24, 100%, 60%)",
+        "foreground": "hsl(0, 0%, 100%)",
+        "description": "Sunset Orange - High visibility action color"
+      },
+      "secondary": {
+        "DEFAULT": "hsl(185, 100%, 40%)",
+        "foreground": "hsl(0, 0%, 100%)",
+        "description": "Deep Turquoise - Ocean vibes, used for headers and active states"
+      },
+      "background": {
+        "DEFAULT": "hsl(40, 20%, 97%)",
+        "description": "Sand White - Reduces glare, warm tone"
+      },
+      "card": {
+        "DEFAULT": "hsl(0, 0%, 100%)",
+        "foreground": "hsl(222, 47%, 11%)",
+        "description": "Pure White - Pops against sand background"
+      },
+      "text": {
+        "primary": "hsl(222, 47%, 11%)",
+        "secondary": "hsl(215, 25%, 40%)",
+        "description": "Deep Navy - Softer than black, nautical contrast"
+      },
+      "accent": {
+        "DEFAULT": "hsl(45, 100%, 50%)",
+        "foreground": "hsl(222, 47%, 11%)",
+        "description": "Sun Yellow - For winners and highlights"
+      },
+      "destructive": {
+        "DEFAULT": "hsl(0, 84%, 60%)",
+        "foreground": "hsl(0, 0%, 100%)"
+      }
+    },
+    "tailwind_config_extension": {
+      "colors": {
+        "sand": "hsl(40, 20%, 97%)",
+        "ocean": "hsl(185, 100%, 40%)",
+        "sunset": "hsl(24, 100%, 60%)",
+        "navy": "hsl(222, 47%, 11%)"
+      }
+    }
+  },
+  "layout": {
+    "spacing_system": {
+      "base": "Generous padding (p-4 to p-8) for touch targets.",
+      "mobile_rule": "Minimum 44px touch targets for ALL interactive elements.",
+      "containers": "Use 'container mx-auto px-4 max-w-md' for mobile-first views."
+    },
+    "grid_strategy": {
+      "dashboard": "Bento Grid (Grid cols 1 on mobile, cols 3 on desktop).",
+      "lists": "Cardless or subtle border-bottom lists for density on mobile."
+    },
+    "z_index_layers": {
+      "base": 0,
+      "sticky_nav": 40,
+      "modal": 50,
+      "toast": 60
+    }
+  },
+  "components": {
+    "buttons": {
+      "style": "Pill-shaped or slightly rounded (rounded-lg).",
+      "primary": "bg-sunset text-white hover:bg-sunset/90 shadow-lg shadow-sunset/20",
+      "secondary": "bg-white border-2 border-ocean/20 text-ocean hover:border-ocean hover:bg-ocean/5",
+      "ghost": "hover:bg-navy/5 text-navy"
+    },
+    "cards": {
+      "style": "bg-white rounded-xl shadow-sm border border-stone-200/60",
+      "hover": "hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+    },
+    "inputs": {
+      "style": "bg-stone-50 border-stone-200 focus:border-ocean focus:ring-ocean/20 rounded-lg h-12 text-lg"
+    },
+    "bracket": {
+      "type": "Swipe-Deck",
+      "instruction": "Do NOT build a giant pan-zoom canvas. Build a 'Round View' where users swipe left/right to see different rounds (e.g., Quarter Finals -> Semi Finals).",
+      "mobile_optimized": true
+    },
+    "score_input": {
+      "type": "Big-Tap",
+      "instruction": "Massive +/- buttons. Full screen modal. Vibration feedback on tap if possible."
+    }
+  },
+  "visual_enhancers": {
+    "textures": {
+      "noise": "Use a subtle noise texture on the background to simulate sand grain (opacity 0.03).",
+      "gradients": "Use 'bg-gradient-to-br from-sand to-white' for pages."
+    },
+    "shadows": {
+      "soft": "shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
+      "sharp": "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] (Use only for 'Brutalist' mode if requested, otherwise stick to soft)"
+    },
+    "icons": {
+      "library": "lucide-react",
+      "style": "Stroke width 2px. Color: Ocean or Navy."
+    }
+  },
+  "images": {
+    "hero_bg": "https://images.unsplash.com/photo-1598023035433-1f42a83c6229?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "action_shots": [
+      "https://images.unsplash.com/photo-1762341582228-5a023ead47f7?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "https://images.unsplash.com/photo-1719214152025-5157eafc7cf6?crop=entropy&cs=srgb&fm=jpg&q=85"
+    ],
+    "textures": [
+      "https://images.unsplash.com/photo-1759428973069-fd92491f0db3?crop=entropy&cs=srgb&fm=jpg&q=85"
+    ]
+  },
+  "accessibility": {
+    "contrast": "Ensure text is Navy (hsl(222, 47%, 11%)) on Sand/White backgrounds. Sunset Orange is for buttons, not text.",
+    "touch_targets": "Min 44x44px. Add p-4 to small icons.",
+    "focus_states": "Ring-2 ring-ocean ring-offset-2"
+  },
+  "instructions_to_main_agent": {
+    "general": "You are building a mobile-critical app. Always check how it looks on a 375px width. Use 'hidden md:block' for desktop-only decorations.",
+    "auth": "Simple, clean forms. Use the sand texture background.",
+    "dashboard": "Show 'Active Tournaments' first. Big 'Create Tournament' FAB (Floating Action Button) or bottom bar.",
+    "tournament_view": "Tabs: Standings | Matches | Bracket. Default to Matches for active tournaments.",
+    "score_entry": "This is the most critical screen. It must be foolproof. Big numbers. Clear 'Finish Match' button.",
+    "export": "Use a simple PDF generation library. Keep the PDF design clean and high-contrast (black/white) for printing."
+  },
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use sonner for toasts. Sonner component are located in /app/src/components/ui/sonner.tsx"
+  ]
+}
