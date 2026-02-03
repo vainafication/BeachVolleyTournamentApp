@@ -166,12 +166,26 @@
 
 /* Floating action button */
 .fab {
-    @apply fixed bottom-20 right-4 md:bottom-8;
-    @apply w-14 h-14 rounded-full;
-    @apply bg-sunset text-white shadow-sunset;
-    @apply flex items-center justify-center;
-    z-index: 30;
+    position: fixed;
+    bottom: 24px;
+    right: 16px;
+    width: 56px;
+    height: 56px;
+    border-radius: 9999px;
+    background-color: hsl(24 100% 60%);
+    color: white;
+    box-shadow: 0 4px 14px 0 hsl(24 100% 60% / 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (min-width: 768px) {
+    .fab {
+        display: none;
+    }
 }
 
 .fab:hover {
