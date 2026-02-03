@@ -1,34 +1,215 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* VolleyPro App Styles */
+
+/* Button variants */
+.btn-sunset {
+    @apply bg-sunset text-white rounded-full px-6 py-3 font-semibold;
+    @apply shadow-lg shadow-sunset/20;
+    transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+.btn-sunset:hover {
+    background-color: hsl(24 100% 55%);
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.btn-sunset:active {
+    transform: scale(0.98);
 }
 
-.App-link {
-    color: #61dafb;
+.btn-ocean {
+    @apply bg-ocean text-white rounded-full px-6 py-3 font-semibold;
+    transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.btn-ocean:hover {
+    background-color: hsl(185 100% 35%);
+}
+
+.btn-ghost {
+    @apply bg-transparent text-navy rounded-lg px-4 py-2;
+    transition: background-color 0.2s ease;
+}
+
+.btn-ghost:hover {
+    @apply bg-navy/5;
+}
+
+/* Input styles */
+.input-field {
+    @apply bg-stone-50 border border-stone-200 rounded-lg h-12 px-4 text-base;
+    @apply focus:border-ocean focus:ring-2 focus:ring-ocean/20 focus:outline-none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Card styles */
+.card-elevated {
+    @apply bg-white rounded-xl shadow-soft border border-stone-200/60;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-elevated:hover {
+    @apply shadow-md;
+    transform: translateY(-2px);
+}
+
+/* Score input button */
+.score-btn {
+    @apply w-16 h-16 rounded-xl font-heading text-2xl font-bold;
+    @apply flex items-center justify-center;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.score-btn:active {
+    transform: scale(0.95);
+}
+
+.score-btn-plus {
+    @apply bg-ocean text-white;
+}
+
+.score-btn-plus:hover {
+    @apply bg-ocean/90;
+}
+
+.score-btn-minus {
+    @apply bg-stone-200 text-navy;
+}
+
+.score-btn-minus:hover {
+    @apply bg-stone-300;
+}
+
+/* Bracket styles */
+.bracket-match {
+    @apply bg-white rounded-lg border border-stone-200 p-3;
+    min-width: 200px;
+}
+
+.bracket-match-completed {
+    @apply border-ocean/30;
+}
+
+.bracket-team {
+    @apply flex items-center justify-between py-2 px-3 rounded-md;
+}
+
+.bracket-team-winner {
+    @apply bg-accent/20;
+}
+
+/* Tab styles */
+.tab-item {
+    @apply px-4 py-3 font-semibold text-sm uppercase tracking-wide;
+    @apply border-b-2 border-transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.tab-item:hover {
+    @apply text-ocean;
+}
+
+.tab-item-active {
+    @apply text-ocean border-ocean;
+}
+
+/* Table styles */
+.standings-table {
+    @apply w-full;
+}
+
+.standings-table th {
+    @apply text-left py-3 px-4 font-heading uppercase tracking-wider text-xs;
+    @apply text-muted-foreground bg-stone-50;
+}
+
+.standings-table td {
+    @apply py-3 px-4 border-b border-stone-100;
+}
+
+.standings-table tr:hover td {
+    @apply bg-stone-50/50;
+}
+
+/* Badge styles */
+.badge-status {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-draft {
+    @apply bg-stone-200 text-stone-700;
+}
+
+.badge-active {
+    @apply bg-ocean/20 text-ocean;
+}
+
+.badge-completed {
+    @apply bg-accent/20 text-accent-foreground;
+}
+
+/* Mobile navigation */
+.mobile-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200;
+    @apply flex justify-around items-center py-2 px-4;
+    @apply md:hidden;
+    z-index: 40;
+}
+
+.mobile-nav-item {
+    @apply flex flex-col items-center py-2 px-4;
+    @apply text-stone-500;
+    transition: color 0.2s ease;
+}
+
+.mobile-nav-item-active {
+    @apply text-ocean;
+}
+
+/* Floating action button */
+.fab {
+    @apply fixed bottom-20 right-4 md:bottom-8;
+    @apply w-14 h-14 rounded-full;
+    @apply bg-sunset text-white shadow-sunset;
+    @apply flex items-center justify-center;
+    z-index: 30;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fab:hover {
+    transform: scale(1.05);
+    @apply shadow-lg;
+}
+
+.fab:active {
+    transform: scale(0.95);
+}
+
+/* Round selector for bracket */
+.round-selector {
+    @apply flex gap-2 overflow-x-auto pb-2 px-4;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.round-selector::-webkit-scrollbar {
+    display: none;
+}
+
+.round-chip {
+    @apply px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium;
+    @apply bg-stone-100 text-stone-600;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.round-chip-active {
+    @apply bg-ocean text-white;
+}
+
+/* Hero section */
+.hero-gradient {
+    background: linear-gradient(135deg, hsl(40 20% 97%) 0%, hsl(0 0% 100%) 100%);
+}
+
+/* Winner highlight */
+.winner-glow {
+    box-shadow: 0 0 20px hsl(45 100% 50% / 0.3);
 }
