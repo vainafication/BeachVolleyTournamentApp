@@ -78,6 +78,17 @@
     @apply bg-stone-300;
 }
 
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
 /* Bracket styles */
 .bracket-match {
     @apply bg-white rounded-lg border border-stone-200 p-3;
