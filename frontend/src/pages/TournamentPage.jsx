@@ -752,9 +752,22 @@ export default function TournamentPage() {
                           >
                             <ChevronLeft className="w-6 h-6" />
                           </button>
-                          <span className="score-display text-4xl w-16 text-center text-navy">
-                            {set.team1}
-                          </span>
+                          <input
+                            type="number"
+                            min="0"
+                            max="99"
+                            value={set.team1}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value) || 0;
+                              setScores(prev => {
+                                const newScores = [...prev];
+                                newScores[idx] = { ...newScores[idx], team1: Math.max(0, Math.min(99, val)) };
+                                return newScores;
+                              });
+                            }}
+                            className="score-display text-4xl w-16 text-center text-navy bg-transparent border-b-2 border-stone-200 focus:border-ocean focus:outline-none"
+                            data-testid={`score-input-t1-s${idx}`}
+                          />
                           <button
                             onClick={() => updateScore(idx, 'team1', 1)}
                             className="score-btn score-btn-plus touch-target"
@@ -775,9 +788,22 @@ export default function TournamentPage() {
                           >
                             <ChevronLeft className="w-6 h-6" />
                           </button>
-                          <span className="score-display text-4xl w-16 text-center text-navy">
-                            {set.team2}
-                          </span>
+                          <input
+                            type="number"
+                            min="0"
+                            max="99"
+                            value={set.team2}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value) || 0;
+                              setScores(prev => {
+                                const newScores = [...prev];
+                                newScores[idx] = { ...newScores[idx], team2: Math.max(0, Math.min(99, val)) };
+                                return newScores;
+                              });
+                            }}
+                            className="score-display text-4xl w-16 text-center text-navy bg-transparent border-b-2 border-stone-200 focus:border-ocean focus:outline-none"
+                            data-testid={`score-input-t2-s${idx}`}
+                          />
                           <button
                             onClick={() => updateScore(idx, 'team2', 1)}
                             className="score-btn score-btn-plus touch-target"
@@ -791,6 +817,11 @@ export default function TournamentPage() {
                   ))}
                 </div>
               </ScrollArea>
+
+              {/* Keyboard hint */}
+              <p className="text-xs text-center text-muted-foreground">
+                Tip: Click on scores to type directly with keyboard
+              </p>
 
               {/* Add Set Button */}
               <Button
