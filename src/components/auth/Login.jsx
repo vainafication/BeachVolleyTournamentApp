@@ -2,118 +2,125 @@ import React, { useState } from 'react';
 import { useTournament } from '../../context/TournamentContext';
 
 const Login = () => {
-    const { login, register } = useTournament();
-    const [isRegisterMode, setIsRegisterMode] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login, register } = useTournament();
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setError('');
-        setIsSubmitting(true);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+    setIsSubmitting(true);
 
-        if (isRegisterMode && password !== confirmPassword) {
-            setError('Passwords do not match');
-            setIsSubmitting(false);
-            return;
-        }
+    if (isRegisterMode && password !== confirmPassword) {
+      setError('Passwords do not match');
+      setIsSubmitting(false);
+      return;
+    }
 
-        // Simulate a bit of loading for premium feel
-        setTimeout(() => {
-            const result = isRegisterMode
-                ? register(username, password)
-                : login(username, password);
+    // Simulate a bit of loading for premium feel
+    setTimeout(() => {
+      const result = isRegisterMode
+        ? register(username, password)
+        : login(username, password);
 
-            if (!result.success) {
-                setError(result.message);
-                setIsSubmitting(false);
-            }
-        }, 800);
-    };
-
-    const toggleMode = () => {
-        setIsRegisterMode(!isRegisterMode);
-        setError('');
+      if (!result.success) {
+        setError(result.message);
+        setIsSubmitting(false);
+      } else if (isRegisterMode) {
+        setSuccessMessage(result.message);
+        setIsSubmitting(false);
+        setIsRegisterMode(false); // Switch to login after registration
         setUsername('');
         setPassword('');
         setConfirmPassword('');
-    };
+      }
+    }, 800);
+  };
 
-    return (
-        <div className="login-wrapper">
-            <div className="login-card glass card">
-                <div className="login-header">
-                    <div className="icon-circle">🏐</div>
-                    <h2>{isRegisterMode ? 'Create Account' : 'Tournament Manager'}</h2>
-                    <p>{isRegisterMode ? 'Join our tournament community' : 'Please enter your credentials to continue'}</p>
-                </div>
+  const toggleMode = () => {
+    setIsRegisterMode(!isRegisterMode);
+    setError('');
+    setSuccessMessage('');
+    setUsername('');
+    setPassword('');
+    setConfirmPassword('');
+  };
 
-                <form onSubmit={handleSubmit} className="login-form">
-                    <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        <input
-                            id="username"
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            placeholder="e.g. beach_master"
-                            required
-                        />
-                    </div>
+  return (
+    <div className="login-wrapper">
+      <div className="login-card glass card">
+        <div className="login-header">
+          <div className="icon-circle">🏐</div>
+          <h2>{isRegisterMode ? 'Create Account' : 'Tournament Manager'}</h2>
+          <p>{isRegisterMode ? 'Join our tournament community' : 'Please enter your credentials to continue'}</p>
+        </div>
 
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            required
-                        />
-                    </div>
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="e.g. beach_master"
+              required
+            />
+          </div>
 
-                    {isRegisterMode && (
-                        <div className="form-group">
-                            <label htmlFor="confirmPassword">Confirm Password</label>
-                            <input
-                                id="confirmPassword"
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                            />
-                        </div>
-                    )}
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+            />
+          </div>
 
-                    {error && <div className="login-error animate-fade-in">{error}</div>}
-
-                    <button
-                        type="submit"
-                        className={`btn btn-primary btn-large ${isSubmitting ? 'btn-loading' : ''}`}
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? 'Processing...' : (isRegisterMode ? 'Sign Up' : 'Sign In')}
-                    </button>
-                </form>
-
-                <div className="login-mode-toggle">
-                    <span>{isRegisterMode ? 'Already have an account?' : "Don't have an account?"}</span>
-                    <button type="button" className="mode-btn" onClick={toggleMode}>
-                        {isRegisterMode ? 'Sign In' : 'Create One'}
-                    </button>
-                </div>
-
-                <div className="login-footer">
-                    <p>Demo Credentials: <code>admin / admin123</code></p>
-                </div>
+          {isRegisterMode && (
+            <div className="form-group">
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
             </div>
+          )}
 
-            <style jsx>{`
+          {error && <div className="login-error animate-fade-in">{error}</div>}
+          {successMessage && <div className="login-success animate-fade-in">{successMessage}</div>}
+
+          <button
+            type="submit"
+            className={`btn btn-primary btn-large ${isSubmitting ? 'btn-loading' : ''}`}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Processing...' : (isRegisterMode ? 'Sign Up' : 'Sign In')}
+          </button>
+        </form>
+
+        <div className="login-mode-toggle">
+          <span>{isRegisterMode ? 'Already have an account?' : "Don't have an account?"}</span>
+          <button type="button" className="mode-btn" onClick={toggleMode}>
+            {isRegisterMode ? 'Sign In' : 'Create One'}
+          </button>
+        </div>
+      </div>
+
+      <style jsx>{`
         .login-wrapper {
           width: 100vw;
           height: 100vh;
@@ -186,6 +193,15 @@ const Login = () => {
           font-size: 0.85rem;
           font-weight: 500;
         }
+        .login-success {
+          padding: var(--space-sm);
+          background-color: rgba(30, 96, 145, 0.1);
+          color: var(--primary);
+          border-radius: var(--radius-sm);
+          text-align: center;
+          font-size: 0.85rem;
+          font-weight: 500;
+        }
         .btn-large {
           width: 100%;
           padding: var(--space-md);
@@ -211,19 +227,6 @@ const Login = () => {
           margin-left: 5px;
           text-decoration: underline;
         }
-        .login-footer {
-          margin-top: var(--space-xl);
-          text-align: center;
-          font-size: 0.8rem;
-          color: var(--text-muted);
-        }
-        code {
-          background: #f1f3f5;
-          padding: 2px 4px;
-          border-radius: 4px;
-          color: var(--primary-dark);
-          font-weight: bold;
-        }
 
         @keyframes slideUp {
           from { opacity: 0; transform: translateY(20px); }
@@ -241,8 +244,8 @@ const Login = () => {
           animation: fadeIn 0.3s ease-out;
         }
       `}</style>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default Login;

@@ -13,11 +13,22 @@ export const useTournament = () => {
 export const TournamentProvider = ({ children }) => {
     // --- Auth State ---
     const [users, setUsers] = useState(() => {
-        const saved = localStorage.getItem('registered_users');
-        const initialByPass = saved ? JSON.parse(saved) : [
-            { username: 'admin', password: 'admin123', role: 'organizer' }
+        const saved = localStorage.getItem('registered_users_v2'); // Versión 2 con 'approved'
+        if (saved) return JSON.parse(saved);
+
+        // Migración o inicialización
+        const oldSaved = localStorage.getItem('registered_users');
+        if (oldSaved) {
+            const oldUsers = JSON.parse(oldSaved);
+            return oldUsers.map(u => ({
+                ...u,
+                approved: u.username === 'admin' // El admin ya está aprobado
+            }));
+        }
+
+        return [
+            { username: 'admin', password: 'admin123', role: 'organizer', approved: true }
         ];
-        return initialByPass;
     });
 
     const [user, setUser] = useState(() => {
@@ -25,18 +36,10 @@ export const TournamentProvider = ({ children }) => {
         return saved ? JSON.parse(saved) : null;
     });
 
-    // --- Global Tournament List (All Users) ---
+    // --- Global Tournament List ---
     const [allTournaments, setAllTournaments] = useState(() => {
-        const saved = localStorage.getItem('tournaments_list_v2'); // New version for ownership
-        if (saved) return JSON.parse(saved);
-
-        // Migration: if old data exists, assign to 'admin'
-        const oldSaved = localStorage.getItem('tournaments_list');
-        if (oldSaved) {
-            const oldData = JSON.parse(oldSaved);
-            return oldData.map(t => ({ ...t, owner: 'admin' }));
-        }
-        return [];
+        const saved = localStorage.getItem('tournaments_list_v2');
+        return saved ? JSON.parse(saved) : [];
     });
 
     const [activeTournamentId, setActiveTournamentId] = useState(() => {
@@ -53,9 +56,13 @@ export const TournamentProvider = ({ children }) => {
         return userTournaments.find(t => t.id === activeTournamentId) || null;
     }, [userTournaments, activeTournamentId]);
 
+    const pendingUsers = useMemo(() => {
+        return users.filter(u => !u.approved);
+    }, [users]);
+
     // --- Persistence Effects ---
     useEffect(() => {
-        localStorage.setItem('registered_users', JSON.stringify(users));
+        localStorage.setItem('registered_users_v2', JSON.stringify(users));
     }, [users]);
 
     useEffect(() => {
@@ -81,21 +88,25 @@ export const TournamentProvider = ({ children }) => {
     // --- Auth Actions ---
     const login = (username, password) => {
         const foundUser = users.find(u => u.username === username && u.password === password);
-        if (foundUser) {
-            setUser({ username: foundUser.username, role: foundUser.role });
-            return { success: true };
+        if (!foundUser) {
+            return { success: false, message: 'Invalid username or password' };
         }
-        return { success: false, message: 'Invalid username or password' };
+
+        if (!foundUser.approved) {
+            return { success: false, message: 'Account pending approval. Please contact the administrator.' };
+        }
+
+        setUser({ username: foundUser.username, role: foundUser.role });
+        return { success: true };
     };
 
     const register = (username, password) => {
         if (users.find(u => u.username === username)) {
             return { success: false, message: 'Username already exists' };
         }
-        const newUser = { username, password, role: 'organizer' };
+        const newUser = { username, password, role: 'organizer', approved: false };
         setUsers(prev => [...prev, newUser]);
-        setUser({ username: newUser.username, role: newUser.role });
-        return { success: true };
+        return { success: true, message: 'Registration successful! Waiting for admin approval.' };
     };
 
     const logout = () => {
@@ -103,12 +114,22 @@ export const TournamentProvider = ({ children }) => {
         setActiveTournamentId(null);
     };
 
+    const approveUser = (username) => {
+        setUsers(prev => prev.map(u =>
+            u.username === username ? { ...u, approved: true } : u
+        ));
+    };
+
+    const rejectUser = (username) => {
+        setUsers(prev => prev.filter(u => u.username !== username));
+    };
+
     // --- Tournament Actions ---
     const createTournament = (config) => {
         if (!user) return;
         const newTournament = {
             id: Date.now().toString(),
-            owner: user.username, // Associate with current user
+            owner: user.username,
             name: config.name,
             numTeams: config.numTeams,
             rules: config.rules || {
@@ -144,7 +165,6 @@ export const TournamentProvider = ({ children }) => {
     };
 
     const loadTournament = (id) => {
-        // Safety check: ensure it belongs to the user
         if (userTournaments.some(t => t.id === id)) {
             setActiveTournamentId(id);
         }
@@ -169,10 +189,14 @@ export const TournamentProvider = ({ children }) => {
     return (
         <TournamentContext.Provider value={{
             user,
+            users,
+            pendingUsers,
             login,
             register,
             logout,
-            tournaments: userTournaments, // Only expose user-specific tournaments
+            approveUser,
+            rejectUser,
+            tournaments: userTournaments,
             tournament,
             activeTournamentId,
             createTournament,

@@ -7,6 +7,7 @@ import GroupPhaseActive from './components/groups/GroupPhaseActive'
 import KnockoutBracket from './components/knockout/KnockoutBracket'
 import Dashboard from './components/dashboard/Dashboard'
 import Login from './components/auth/Login'
+import UserManagement from './components/auth/UserManagement'
 import './App.css'
 
 function App() {
@@ -15,10 +16,12 @@ function App() {
     logout,
     tournament,
     closeActiveTournament,
-    activeTournamentId
+    activeTournamentId,
+    pendingUsers
   } = useTournament();
 
   const [isCreating, setIsCreating] = useState(false);
+  const [isAdminView, setIsAdminView] = useState(false);
 
   // Guard: If no user is logged in, show the Login screen
   if (!user) {
@@ -26,6 +29,11 @@ function App() {
   }
 
   const renderContent = () => {
+    // Admin User Management view
+    if (isAdminView && user.username === 'admin') {
+      return <UserManagement />;
+    }
+
     // If no active tournament is selected
     if (!activeTournamentId) {
       if (isCreating) {
@@ -51,6 +59,7 @@ function App() {
 
   const handleBackToHome = () => {
     setIsCreating(false);
+    setIsAdminView(false);
     closeActiveTournament();
   };
 
@@ -64,17 +73,28 @@ function App() {
           </div>
 
           <div className="header-actions">
-            {(activeTournamentId || isCreating) && (
+            {(activeTournamentId || isCreating || isAdminView) && (
               <button className="btn btn-secondary btn-sm" onClick={handleBackToHome}>
                 ← Back to Home
               </button>
             )}
+
+            {user.username === 'admin' && !tournament && !isCreating && (
+              <button
+                className={`btn btn-sm ${isAdminView ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setIsAdminView(!isAdminView)}
+              >
+                Manage Users {pendingUsers.length > 0 && <span className="notification-dot">{pendingUsers.length}</span>}
+              </button>
+            )}
+
             {tournament && (
               <div className="tournament-info">
                 <span className="badge">{tournament.name}</span>
                 <span className="status-badge">{tournament.status}</span>
               </div>
             )}
+
             <div className="user-info">
               <span className="user-name">👤 {user.username}</span>
               <button className="btn btn-danger btn-sm logout-btn" onClick={logout}>
@@ -138,6 +158,16 @@ function App() {
         .btn-sm {
           padding: 6px 12px;
           font-size: 0.8rem;
+          position: relative;
+        }
+        .notification-dot {
+          background: var(--danger);
+          color: white;
+          font-size: 0.6rem;
+          padding: 1px 5px;
+          border-radius: 10px;
+          margin-left: 5px;
+          vertical-align: middle;
         }
         .logout-btn {
           margin-left: var(--space-md);
