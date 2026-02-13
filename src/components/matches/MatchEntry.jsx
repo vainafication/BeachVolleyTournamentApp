@@ -1,69 +1,69 @@
 import React, { useState } from 'react';
 
 const MatchEntry = ({ match, rules, onSave, onClose }) => {
-    const [sets, setSets] = useState(match.setHistory.length > 0 ? match.setHistory : [{ a: 0, b: 0 }]);
+  const [sets, setSets] = useState(match.setHistory.length > 0 ? match.setHistory : [{ a: 0, b: 0 }]);
 
-    const updateSet = (index, field, value) => {
-        const newSets = [...sets];
-        newSets[index][field] = parseInt(value) || 0;
-        setSets(newSets);
-    };
+  const updateSet = (index, field, value) => {
+    const newSets = [...sets];
+    newSets[index][field] = parseInt(value) || 0;
+    setSets(newSets);
+  };
 
-    const addSet = () => setSets([...sets, { a: 0, b: 0 }]);
+  const addSet = () => setSets([...sets, { a: 0, b: 0 }]);
 
-    const handleSave = () => {
-        let setsA = 0;
-        let setsB = 0;
-        sets.forEach(set => {
-            if (set.a > set.b) setsA++;
-            else if (set.b > set.a) setsB++;
-        });
+  const handleSave = () => {
+    let setsA = 0;
+    let setsB = 0;
+    sets.forEach(set => {
+      if (set.a > set.b) setsA++;
+      else if (set.b > set.a) setsB++;
+    });
 
-        onSave({
-            ...match,
-            setHistory: sets,
-            setsA,
-            setsB,
-            completed: true
-        });
-    };
+    onSave({
+      ...match,
+      setHistory: sets,
+      setsA,
+      setsB,
+      completed: true
+    });
+  };
 
-    return (
-        <div className="modal-overlay">
-            <div className="modal-content card">
-                <h3>Match Result</h3>
-                <p className="match-info">{match.teamA.name} vs {match.teamB.name}</p>
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content card">
+        <h3>Match Result</h3>
+        <p className="match-info">{match.teamA.name} vs {match.teamB.name}</p>
 
-                <div className="sets-entry">
-                    {sets.map((set, i) => (
-                        <div key={i} className="set-row">
-                            <span className="set-label">Set {i + 1}</span>
-                            <input
-                                type="number"
-                                value={set.a}
-                                onChange={(e) => updateSet(i, 'a', e.target.value)}
-                            />
-                            <span className="divider">:</span>
-                            <input
-                                type="number"
-                                value={set.b}
-                                onChange={(e) => updateSet(i, 'b', e.target.value)}
-                            />
-                        </div>
-                    ))}
-                </div>
-
-                <button className="btn btn-secondary btn-small" onClick={addSet} style={{ marginTop: 'var(--space-md)' }}>
-                    + Add Set
-                </button>
-
-                <div className="modal-actions">
-                    <button className="btn btn-primary" onClick={handleSave}>Save Result</button>
-                    <button className="btn" onClick={onClose}>Cancel</button>
-                </div>
+        <div className="sets-entry">
+          {sets.map((set, i) => (
+            <div key={i} className="set-row">
+              <span className="set-label">Set {i + 1}</span>
+              <input
+                type="number"
+                value={set.a}
+                onChange={(e) => updateSet(i, 'a', e.target.value)}
+              />
+              <span className="divider">:</span>
+              <input
+                type="number"
+                value={set.b}
+                onChange={(e) => updateSet(i, 'b', e.target.value)}
+              />
             </div>
+          ))}
+        </div>
 
-            <style jsx>{`
+        <button className="btn btn-secondary btn-small" onClick={addSet} style={{ marginTop: 'var(--space-md)' }}>
+          + Add Set
+        </button>
+
+        <div className="modal-actions">
+          <button className="btn btn-primary" onClick={handleSave}>Save Result</button>
+          <button className="btn" onClick={onClose}>Cancel</button>
+        </div>
+      </div>
+
+      <style jsx>{`
         .modal-overlay {
           position: fixed;
           top: 0;
@@ -122,9 +122,30 @@ const MatchEntry = ({ match, rules, onSave, onClose }) => {
           font-size: 0.8rem;
           padding: 4px 12px;
         }
+        @media (max-width: 500px) {
+          .modal-content {
+            max-width: 100%;
+            height: auto;
+            max-height: 90vh;
+            overflow-y: auto;
+          }
+          .set-row {
+            gap: var(--space-sm);
+          }
+          input {
+            width: 50px;
+            padding: var(--space-xs);
+          }
+          .modal-actions {
+            flex-direction: column;
+          }
+          .modal-actions .btn {
+            width: 100%;
+          }
+        }
       `}</style>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default MatchEntry;

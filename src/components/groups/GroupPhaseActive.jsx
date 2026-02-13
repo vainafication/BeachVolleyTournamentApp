@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTournament } from '../../context/TournamentContext';
-import { calculateStandings, generateKnockoutMatches } from '../../logic/tournamentLogic';
+import { calculateStandings } from '../../logic/tournamentLogic';
 import MatchEntry from '../matches/MatchEntry';
 
 const GroupPhaseActive = () => {
@@ -9,20 +9,40 @@ const GroupPhaseActive = () => {
   const [activeMatch, setActiveMatch] = useState(null);
 
   const currentGroup = tournament.groups[selectedGroupIndex];
-  const standings = calculateStandings(currentGroup.teams, currentGroup.matches, tournament.rules);
+
+  const standings = useMemo(() => {
+    return calculateStandings(currentGroup.teams, currentGroup.matches, tournament.rules);
+  }, [currentGroup, tournament.rules]);
 
   const handleMatchUpdate = (updatedMatch) => {
-    const newGroups = [...tournament.groups];
-    const groupMatches = newGroups[selectedGroupIndex].matches;
-    const matchIndex = groupMatches.findIndex(m => m.id === updatedMatch.id);
-    groupMatches[matchIndex] = updatedMatch;
+    const newGroups = tournament.groups.map(group => {
+      if (group.id === currentGroup.id) {
+        return {
+          ...group,
+          matches: group.matches.map(m => m.id === updatedMatch.id ? updatedMatch : m)
+        };
+      }
+      return group;
+    });
 
     updateTournament({ groups: newGroups });
     setActiveMatch(null);
   };
 
   const handleAdvanceToKnockout = () => {
-    // Collect top 2 teams from each group
+    const allMatchesCompleted = tournament.groups.every(group =>
+      group.matches.every(m => m.completed)
+    );
+
+    if (!allMatchesCompleted) {
+      alert('Please complete all matches in all groups before advancing.');
+      return;
+    }
+
+    if (!window.confirm('Are you sure you want to advance to the knockout phase? This cannot be undone.')) {
+      return;
+    }
+
     const advancedTeams = [];
     tournament.groups.forEach(group => {
       const groupStandings = calculateStandings(group.teams, group.matches, tournament.rules);
@@ -34,17 +54,10 @@ const GroupPhaseActive = () => {
       }
     });
 
-    // Simple seed sorting (can be more complex)
-    const sortedAdvanced = advancedTeams.sort((a, b) => b.matchPoints - a.matchPoints || (b.setsWon - b.setsLost) - (a.setsWon - a.setsLost));
-
-    // For 8 teams, we generate QF
-    const knockoutRounds = generateKnockoutMatches(sortedAdvanced.slice(0, 8));
-
     updateTournament({
-      knockout: {
-        rounds: knockoutRounds
-      },
-      status: 'KNOCKOUT'
+      status: 'KNOCKOUT',
+      advancedTeams,
+      knockout: null
     });
   };
 
@@ -78,7 +91,7 @@ const GroupPhaseActive = () => {
                   <th>P</th>
                   <th>W</th>
                   <th>L</th>
-                  <th>Sets</th>
+                  <th>S</th>
                   <th>Pts</th>
                 </tr>
               </thead>
@@ -126,18 +139,18 @@ const GroupPhaseActive = () => {
         </section>
       </div>
 
-      <div className="actions" style={{ marginTop: 'var(--space-xl)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="actions footer-actions">
         <p className="hint">Ensure all matches are completed before advancing.</p>
-        <button className="btn btn-primary" onClick={handleAdvanceToKnockout}>
+        <button className="btn btn-primary advance-btn" onClick={handleAdvanceToKnockout}>
           Advance to Knockout Phase
         </button>
       </div>
 
-      <div className="utility-actions card" style={{ marginTop: 'var(--space-md)', padding: 'var(--space-sm)', display: 'flex', justifyContent: 'center', gap: 'var(--space-md)' }}>
+      <div className="utility-actions card">
         <button className="btn btn-secondary btn-sm" onClick={handleExport}>
-          Export Tournament Data (JSON)
+          Export Data
         </button>
-        <button className="btn btn-sm" onClick={() => alert('Tournament state is automatically saved.')}>
+        <button className="btn btn-sm" onClick={() => alert('Saved automatically.')}>
           Save Snapshot
         </button>
       </div>
@@ -154,62 +167,50 @@ const GroupPhaseActive = () => {
       <style jsx>{`
         .group-active-container {
           width: 100%;
-          max-width: 1000px;
-        }
-        .hint {
-          font-size: 0.8rem;
-          color: var(--text-muted);
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-lg);
         }
         .group-tabs {
           display: flex;
           gap: var(--space-sm);
-          margin-bottom: var(--space-md);
           overflow-x: auto;
-          padding-bottom: var(--space-xs);
+          padding-bottom: var(--space-sm);
+          scrollbar-width: none;
         }
+        .group-tabs::-webkit-scrollbar { display: none; }
         .tab {
-          padding: var(--space-sm) var(--space-md);
-          background: #eee;
+          padding: var(--space-sm) var(--space-lg);
+          background: white;
           border-radius: var(--radius-md);
           white-space: nowrap;
           font-weight: 600;
+          color: var(--text-muted);
+          border: 1px solid #ddd;
         }
         .tab.active {
           background: var(--primary);
           color: white;
+          border-color: var(--primary);
         }
         .group-content {
           display: grid;
-          grid-template-columns: 1fr;
+          grid-template-columns: 1.2fr 1fr;
           gap: var(--space-lg);
+          align-items: start;
         }
-        @media (min-width: 900px) {
+        @media (max-width: 1000px) {
           .group-content {
-            grid-template-columns: 1.2fr 0.8fr;
+            grid-template-columns: 1fr;
           }
-        }
-        .standings-section table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: var(--space-md);
-        }
-        th {
-          text-align: left;
-          color: var(--text-muted);
-          font-size: 0.8rem;
-          padding: var(--space-sm);
-          border-bottom: 2px solid #eee;
-        }
-        td {
-          padding: var(--space-sm);
-          border-bottom: 1px solid #f0f0f0;
         }
         .team-name-cell {
           font-weight: 600;
+          color: var(--primary-dark);
         }
         .highlight-cell {
           font-weight: bold;
-          color: var(--primary);
+          color: var(--accent);
         }
         .match-list {
           display: flex;
@@ -218,17 +219,23 @@ const GroupPhaseActive = () => {
           margin-top: var(--space-md);
         }
         .match-card {
-          padding: var(--space-md);
-          background: #f8f9fa;
-          border-radius: var(--radius-md);
           display: flex;
           justify-content: space-between;
           align-items: center;
+          padding: var(--space-md);
+          background: #f8f9fa;
+          border-radius: var(--radius-md);
           cursor: pointer;
-          transition: background 0.2s;
+          transition: all 0.2s;
+          border-left: 4px solid var(--primary);
         }
         .match-card:hover {
-          background: #e9ecef;
+          transform: translateX(4px);
+          background: #f1f3f5;
+        }
+        .match-card.completed {
+          border-left-color: var(--success);
+          opacity: 0.8;
         }
         .match-teams {
           display: flex;
@@ -238,29 +245,66 @@ const GroupPhaseActive = () => {
         }
         .team {
           flex: 1;
-          font-size: 0.9rem;
+          font-weight: 500;
         }
         .team.winner {
-          color: var(--primary);
+          color: var(--primary-dark);
           font-weight: bold;
         }
         .score {
           font-weight: bold;
-          background: #ddd;
-          padding: 2px 10px;
-          border-radius: 10px;
-          min-width: 50px;
+          background: white;
+          padding: 2px 8px;
+          border-radius: 4px;
+          min-width: 60px;
           text-align: center;
         }
         .pending-tag {
           font-size: 0.7rem;
-          background: var(--secondary);
-          padding: 2px 6px;
-          border-radius: 4px;
+          color: var(--accent);
           font-weight: bold;
+          text-transform: uppercase;
         }
-        .table-wrapper {
-          overflow-x: auto;
+        .footer-actions {
+          margin-top: var(--space-xl);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: var(--space-md);
+        }
+        .hint {
+          color: var(--text-muted);
+          font-size: 0.9rem;
+        }
+        .utility-actions {
+          margin-top: var(--space-md);
+          padding: var(--space-sm);
+          display: flex;
+          justify-content: center;
+          gap: var(--space-md);
+        }
+        @media (max-width: 600px) {
+          .footer-actions {
+            flex-direction: column;
+            text-align: center;
+          }
+          .advance-btn {
+            width: 100%;
+          }
+          .utility-actions {
+            flex-direction: column;
+            gap: var(--space-sm);
+          }
+          .utility-actions .btn {
+            width: 100%;
+          }
+          .match-teams {
+            gap: var(--space-xs);
+          }
+          .score {
+            min-width: 50px;
+            font-size: 0.9rem;
+          }
         }
       `}</style>
     </div>

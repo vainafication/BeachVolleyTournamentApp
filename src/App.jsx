@@ -177,15 +177,24 @@ function App() {
             flex-direction: column;
             text-align: center;
             gap: var(--space-md);
+            padding: var(--space-sm);
           }
           .header-actions {
-            flex-direction: row;
+            flex-direction: column;
             width: 100%;
             justify-content: center;
-            flex-wrap: wrap;
+            gap: var(--space-md);
           }
           .tournament-info {
             align-items: center;
+            width: 100%;
+          }
+          .user-info {
+            width: 100%;
+            justify-content: center;
+            padding: var(--space-md);
+            border-left: none;
+            border-top: 1px solid rgba(255,255,255,0.2);
           }
         }
       `}</style>

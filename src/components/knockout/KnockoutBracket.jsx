@@ -173,6 +173,27 @@ const KnockoutBracket = () => {
           font-size: 0.8rem;
           color: var(--text-muted);
         }
+        @media (max-width: 768px) {
+          .bracket-wrapper {
+            padding-bottom: var(--space-xl);
+          }
+          .round-column {
+            min-width: 220px;
+          }
+          .bracket-match {
+            padding: var(--space-xs);
+          }
+          .bracket-team {
+            padding: var(--space-xs) var(--space-xs);
+          }
+          .name {
+            font-size: 0.85rem;
+          }
+          .score {
+            margin-left: var(--space-sm);
+            font-size: 0.9rem;
+          }
+        }
       `}</style>
     </div>
   );

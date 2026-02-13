@@ -1,16 +1,19 @@
 :root {
   /* Color Palette */
-  --primary: #0077b6; /* Ocean Blue */
+  --primary: #0077b6;
+  /* Ocean Blue */
   --primary-dark: #023e8a;
-  --secondary: #ffb703; /* Sand/Sun Yellow */
-  --accent: #fb8500; /* Sunset Orange */
+  --secondary: #ffb703;
+  /* Sand/Sun Yellow */
+  --accent: #fb8500;
+  /* Sunset Orange */
   --background: #f8f9fa;
   --surface: #ffffff;
   --text: #212529;
   --text-muted: #6c757d;
   --success: #2d6a4f;
   --danger: #c1121f;
-  
+
   /* Spacing */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -24,15 +27,20 @@
   --radius-lg: 16px;
 
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
 }
 
 body {
@@ -41,11 +49,19 @@ body {
   color: var(--text);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
-  color: var(--primary-dark);
+h1 {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+}
+
+h2 {
+  font-size: clamp(1.2rem, 4vw, 2rem);
+}
+
+h3 {
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
 }
 
 button {
@@ -54,6 +70,7 @@ button {
   border: none;
   background: none;
   transition: all 0.2s ease;
+  touch-action: manipulation;
 }
 
 .btn {
@@ -64,6 +81,8 @@ button {
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
+  min-height: 44px;
+  /* Better touch target */
 }
 
 .btn-primary {
@@ -79,8 +98,37 @@ button {
 .card {
   background-color: var(--surface);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg);
+  padding: clamp(var(--space-md), 4vw, var(--space-lg));
   box-shadow: var(--shadow-md);
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: var(--space-md);
+  border-radius: var(--radius-md);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+th,
+td {
+  padding: var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background-color: #f1f3f5;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* Glassmorphism utility */
@@ -89,4 +137,11 @@ button {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 600px) {
+  :root {
+    --space-xl: 1.5rem;
+    --space-lg: 1rem;
+  }
 }
