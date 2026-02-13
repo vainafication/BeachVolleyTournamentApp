@@ -6,17 +6,30 @@ import GroupAssignment from './components/groups/GroupAssignment'
 import GroupPhaseActive from './components/groups/GroupPhaseActive'
 import KnockoutBracket from './components/knockout/KnockoutBracket'
 import Dashboard from './components/dashboard/Dashboard'
+import Login from './components/auth/Login'
 import './App.css'
 
 function App() {
-  const { tournament, closeActiveTournament, activeTournamentId } = useTournament();
+  const {
+    user,
+    logout,
+    tournament,
+    closeActiveTournament,
+    activeTournamentId
+  } = useTournament();
+
   const [isCreating, setIsCreating] = useState(false);
+
+  // Guard: If no user is logged in, show the Login screen
+  if (!user) {
+    return <Login />;
+  }
 
   const renderContent = () => {
     // If no active tournament is selected
     if (!activeTournamentId) {
       if (isCreating) {
-        return <TournamentSetup />; // Note: creating a tournament will set activeTournamentId automatically
+        return <TournamentSetup />;
       }
       return <Dashboard onNewTournament={() => setIsCreating(true)} />;
     }
@@ -62,6 +75,12 @@ function App() {
                 <span className="status-badge">{tournament.status}</span>
               </div>
             )}
+            <div className="user-info">
+              <span className="user-name">👤 {user.username}</span>
+              <button className="btn btn-danger btn-sm logout-btn" onClick={logout}>
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -104,18 +123,36 @@ function App() {
           color: var(--text-muted);
           text-transform: uppercase;
         }
+        .user-info {
+          display: flex;
+          align-items: center;
+          gap: var(--space-sm);
+          border-left: 1px solid rgba(255,255,255,0.2);
+          padding-left: var(--space-md);
+        }
+        .user-name {
+          font-weight: 600;
+          font-size: 0.9rem;
+          color: var(--primary-dark);
+        }
         .btn-sm {
           padding: 6px 12px;
           font-size: 0.8rem;
         }
-        @media (max-width: 700px) {
+        .logout-btn {
+          margin-left: var(--space-md);
+        }
+        @media (max-width: 900px) {
           .header-content {
             flex-direction: column;
             text-align: center;
             gap: var(--space-md);
           }
           .header-actions {
-            flex-direction: column;
+            flex-direction: row;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
           }
           .tournament-info {
             align-items: center;
