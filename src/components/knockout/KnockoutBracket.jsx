@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
 import { useTournament } from '../../context/TournamentContext';
+import { generateKnockoutMatches } from '../../logic/tournamentLogic';
 import MatchEntry from '../matches/MatchEntry';
 
 const KnockoutBracket = () => {
   const { tournament, updateTournament, exportTournament } = useTournament();
   const [activeMatch, setActiveMatch] = useState(null);
 
-  if (!tournament.knockout) return null;
+  if (!tournament.knockout) {
+    if (tournament.advancedTeams && tournament.advancedTeams.length > 0) {
+      setTimeout(() => {
+        const rounds = generateKnockoutMatches(tournament.advancedTeams);
+        updateTournament({ knockout: { rounds } });
+      }, 0);
+      return <div className="p-4 text-center">Generating Knockout Bracket...</div>;
+    }
+    return <div className="p-4 text-center">Knockout phase not initialized. Please complete the group phase.</div>;
+  }
 
   const handleMatchUpdate = (updatedMatch) => {
     const newKnockout = { ...tournament.knockout };
@@ -50,7 +60,10 @@ const KnockoutBracket = () => {
 
   return (
     <div className="knockout-container card">
-      <h2>Knockout Phase</h2>
+      <div className="knockout-header">
+        <h2>Knockout Phase</h2>
+      </div>
+
       <div className="bracket-wrapper">
         {tournament.knockout.rounds.map((round, rIdx) => (
           <div key={rIdx} className="round-column">
@@ -76,17 +89,23 @@ const KnockoutBracket = () => {
                 </div>
               ))}
             </div>
-
-            <div className="utility-actions" style={{ marginTop: 'var(--space-xl)', display: 'flex', justifyContent: 'center', gap: 'var(--space-md)' }}>
-              <button className="btn btn-secondary btn-sm" onClick={handleExport}>
-                Export Tournament JSON
-              </button>
-              <button className="btn btn-sm" onClick={() => alert('Tournament state is automatically saved.')}>
-                Manual Save
-              </button>
-            </div>
           </div>
         ))}
+      </div>
+
+      <div className="round-indicators">
+        {tournament.knockout.rounds.map((round, idx) => (
+          <div key={idx} className="round-dot" title={round.name}></div>
+        ))}
+      </div>
+
+      <div className="utility-actions">
+        <button className="btn btn-secondary btn-sm" onClick={handleExport}>
+          Export JSON
+        </button>
+        <button className="btn btn-sm" onClick={() => alert('Tournament state is automatically saved.')}>
+          Manual Save
+        </button>
       </div>
 
       {activeMatch && (
@@ -99,18 +118,32 @@ const KnockoutBracket = () => {
       )}
 
       <style jsx>{`
+        .knockout-container {
+          width: 100%;
+          max-width: 100%;
+        }
+        .knockout-header {
+          margin-bottom: var(--space-md);
+        }
         .bracket-wrapper {
           display: flex;
           gap: var(--space-xl);
           overflow-x: auto;
-          padding: var(--space-lg) 0;
+          overflow-y: visible;
+          padding: var(--space-md) 0;
+          scroll-snap-type: x mandatory;
+          -webkit-overflow-scrolling: touch;
+          margin: 0 calc(-1 * var(--space-lg));
+          padding-left: var(--space-lg);
+          padding-right: var(--space-lg);
         }
         .round-column {
-          flex: 1;
-          min-width: 250px;
+          flex: 0 0 auto;
+          min-width: 280px;
           display: flex;
           flex-direction: column;
           align-items: center;
+          scroll-snap-align: center;
         }
         .round-matches {
           display: flex;
@@ -120,6 +153,7 @@ const KnockoutBracket = () => {
           width: 100%;
           gap: var(--space-lg);
           margin-top: var(--space-md);
+          margin-bottom: var(--space-lg);
         }
         .bracket-match {
           padding: var(--space-sm);
@@ -170,28 +204,75 @@ const KnockoutBracket = () => {
         }
         h4 {
           text-transform: uppercase;
-          font-size: 0.8rem;
+          font-size: 0.9rem;
           color: var(--text-muted);
+          font-weight: 700;
+        }
+        .utility-actions {
+          margin-top: var(--space-lg);
+          display: flex;
+          justify-content: center;
+          gap: var(--space-md);
+          flex-wrap: wrap;
+        }
+        .round-indicators {
+          display: flex;
+          justify-content: center;
+          gap: var(--space-sm);
+          margin-top: var(--space-md);
+          padding: var(--space-sm) 0;
+        }
+        .round-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #ddd;
         }
         @media (max-width: 768px) {
+          .knockout-container {
+            padding: var(--space-md);
+          }
           .bracket-wrapper {
-            padding-bottom: var(--space-xl);
+            gap: var(--space-md);
+            margin: 0 calc(-1 * var(--space-md));
+            padding-left: var(--space-md);
+            padding-right: var(--space-md);
           }
           .round-column {
-            min-width: 220px;
+            min-width: 90vw;
           }
           .bracket-match {
-            padding: var(--space-xs);
+            padding: var(--space-md);
           }
           .bracket-team {
-            padding: var(--space-xs) var(--space-xs);
+            padding: var(--space-sm);
           }
           .name {
-            font-size: 0.85rem;
+            font-size: 1rem;
           }
           .score {
             margin-left: var(--space-sm);
-            font-size: 0.9rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+          }
+          h4 {
+            font-size: 1.2rem;
+            margin-bottom: var(--space-sm);
+          }
+          .round-indicators {
+            display: flex;
+          }
+          .round-dot {
+            width: 10px;
+            height: 10px;
+          }
+          .utility-actions {
+            flex-direction: column;
+            width: 100%;
+          }
+          .utility-actions .btn {
+            width: 100%;
+            min-height: 44px;
           }
         }
       `}</style>

@@ -93,6 +93,18 @@ const TeamInput = () => {
           display: flex;
           justify-content: flex-end;
         }
+        @media (max-width: 600px) {
+          .team-grid {
+            grid-template-columns: 1fr;
+          }
+          .team-form-group {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          .team-number {
+            margin-bottom: var(--space-xs);
+          }
+        }
       `}</style>
         </div>
     );

@@ -67,6 +67,7 @@ const Dashboard = ({ onNewTournament }) => {
           display: flex;
           flex-direction: column;
           gap: var(--space-lg);
+          padding: 0 var(--space-sm);
         }
         .dashboard-header {
           display: flex;

@@ -144,4 +144,34 @@ th {
     --space-xl: 1.5rem;
     --space-lg: 1rem;
   }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  .card {
+    padding: var(--space-md);
+  }
+}
+
+/* Prevent iOS zoom on inputs */
+input,
+select,
+textarea {
+  font-size: 16px !important;
+}
+
+/* Better touch targets for mobile */
+@media (hover: none) and (pointer: coarse) {
+
+  .btn,
+  button,
+  input,
+  select {
+    min-height: 44px;
+  }
 }

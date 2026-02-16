@@ -176,14 +176,21 @@ function App() {
           .header-content {
             flex-direction: column;
             text-align: center;
-            gap: var(--space-md);
-            padding: var(--space-sm);
+            gap: var(--space-sm);
+            padding: var(--space-sm) var(--space-md);
+          }
+          .tournament-info h1 {
+            font-size: 1.3rem;
           }
           .header-actions {
             flex-direction: column;
             width: 100%;
             justify-content: center;
-            gap: var(--space-md);
+            gap: var(--space-xs);
+          }
+          .header-actions .btn {
+            width: 100%;
+            min-height: 44px;
           }
           .tournament-info {
             align-items: center;
@@ -192,7 +199,7 @@ function App() {
           .user-info {
             width: 100%;
             justify-content: center;
-            padding: var(--space-md);
+            padding: var(--space-xs) 0;
             border-left: none;
             border-top: 1px solid rgba(255,255,255,0.2);
           }

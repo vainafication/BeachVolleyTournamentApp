@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useTournament } from '../../context/TournamentContext';
-import { calculateStandings } from '../../logic/tournamentLogic';
+import { calculateStandings, generateKnockoutMatches } from '../../logic/tournamentLogic';
 import MatchEntry from '../matches/MatchEntry';
 
 const GroupPhaseActive = () => {
@@ -54,10 +54,12 @@ const GroupPhaseActive = () => {
       }
     });
 
+    const rounds = generateKnockoutMatches(advancedTeams);
+
     updateTournament({
       status: 'KNOCKOUT',
       advancedTeams,
-      knockout: null
+      knockout: { rounds }
     });
   };
 
@@ -91,7 +93,7 @@ const GroupPhaseActive = () => {
                   <th>P</th>
                   <th>W</th>
                   <th>L</th>
-                  <th>S</th>
+                  <th className="hide-mobile">S</th>
                   <th>Pts</th>
                 </tr>
               </thead>
@@ -103,7 +105,7 @@ const GroupPhaseActive = () => {
                     <td>{s.played}</td>
                     <td>{s.wins}</td>
                     <td>{s.losses}</td>
-                    <td>{s.setsWon}:{s.setsLost}</td>
+                    <td className="hide-mobile">{s.setsWon}:{s.setsLost}</td>
                     <td className="highlight-cell">{s.matchPoints}</td>
                   </tr>
                 ))}
@@ -177,21 +179,30 @@ const GroupPhaseActive = () => {
           overflow-x: auto;
           padding-bottom: var(--space-sm);
           scrollbar-width: none;
+          -webkit-overflow-scrolling: touch;
         }
         .group-tabs::-webkit-scrollbar { display: none; }
         .tab {
-          padding: var(--space-sm) var(--space-lg);
+          padding: var(--space-md) var(--space-lg);
           background: white;
           border-radius: var(--radius-md);
           white-space: nowrap;
           font-weight: 600;
+          font-size: 1rem;
           color: var(--text-muted);
-          border: 1px solid #ddd;
+          border: 2px solid #ddd;
+          transition: all 0.2s;
+          min-height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .tab.active {
           background: var(--primary);
           color: white;
           border-color: var(--primary);
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-sm);
         }
         .group-content {
           display: grid;
@@ -204,6 +215,17 @@ const GroupPhaseActive = () => {
             grid-template-columns: 1fr;
           }
         }
+        .standings-section h3,
+        .matches-section h3 {
+          margin-bottom: var(--space-md);
+        }
+        .table-wrapper {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        table {
+          font-size: 0.9rem;
+        }
         .team-name-cell {
           font-weight: 600;
           color: var(--primary-dark);
@@ -215,7 +237,7 @@ const GroupPhaseActive = () => {
         .match-list {
           display: flex;
           flex-direction: column;
-          gap: var(--space-sm);
+          gap: var(--space-md);
           margin-top: var(--space-md);
         }
         .match-card {
@@ -228,14 +250,16 @@ const GroupPhaseActive = () => {
           cursor: pointer;
           transition: all 0.2s;
           border-left: 4px solid var(--primary);
+          min-height: 60px;
         }
         .match-card:hover {
           transform: translateX(4px);
           background: #f1f3f5;
+          box-shadow: var(--shadow-sm);
         }
         .match-card.completed {
           border-left-color: var(--success);
-          opacity: 0.8;
+          opacity: 0.85;
         }
         .match-teams {
           display: flex;
@@ -246,6 +270,7 @@ const GroupPhaseActive = () => {
         .team {
           flex: 1;
           font-weight: 500;
+          font-size: 0.95rem;
         }
         .team.winner {
           color: var(--primary-dark);
@@ -254,10 +279,11 @@ const GroupPhaseActive = () => {
         .score {
           font-weight: bold;
           background: white;
-          padding: 2px 8px;
-          border-radius: 4px;
+          padding: 4px 12px;
+          border-radius: var(--radius-sm);
           min-width: 60px;
           text-align: center;
+          font-size: 1rem;
         }
         .pending-tag {
           font-size: 0.7rem;
@@ -283,13 +309,87 @@ const GroupPhaseActive = () => {
           justify-content: center;
           gap: var(--space-md);
         }
-        @media (max-width: 600px) {
+        .hide-mobile {
+          display: table-cell;
+        }
+        @media (max-width: 768px) {
+          .hide-mobile {
+            display: none;
+          }
+          .tab {
+            padding: var(--space-xs) var(--space-md);
+            font-size: 0.9rem;
+          }
+          table {
+            font-size: 0.85rem;
+          }
+          th, td {
+            padding: var(--space-xs) 6px;
+          }
+          th {
+            font-size: 0.75rem;
+          }
+          .team-name-cell {
+            max-width: 90px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.9rem;
+          }
+          .match-list {
+            gap: var(--space-md);
+          }
+          .match-card {
+            padding: var(--space-md);
+            min-height: auto;
+            flex-direction: column;
+            gap: var(--space-sm);
+            border: 1px solid #e0e0e0;
+          }
+          .match-teams {
+            flex-direction: column;
+            gap: var(--space-sm);
+            width: 100%;
+          }
+          .team {
+            background: white;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 1px solid #f0f0f0;
+          }
+          .team.winner {
+            background: rgba(0, 119, 182, 0.05);
+            border-color: var(--primary);
+          }
+          .score {
+            min-width: auto;
+            font-size: 1.1rem;
+            padding: var(--space-xs) var(--space-sm);
+            align-self: center;
+            font-weight: 700;
+          }
+          .pending-tag {
+            font-size: 0.7rem;
+            align-self: center;
+            padding: 2px 8px;
+            background: rgba(251, 133, 0, 0.1);
+            border-radius: var(--radius-sm);
+          }
           .footer-actions {
             flex-direction: column;
             text-align: center;
+            gap: var(--space-sm);
           }
           .advance-btn {
             width: 100%;
+            min-height: 48px;
+          }
+          .hint {
+            font-size: 0.85rem;
+            order: -1;
           }
           .utility-actions {
             flex-direction: column;
@@ -297,13 +397,7 @@ const GroupPhaseActive = () => {
           }
           .utility-actions .btn {
             width: 100%;
-          }
-          .match-teams {
-            gap: var(--space-xs);
-          }
-          .score {
-            min-width: 50px;
-            font-size: 0.9rem;
+            min-height: 44px;
           }
         }
       `}</style>
